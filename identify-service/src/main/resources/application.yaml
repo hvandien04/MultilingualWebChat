@@ -1,0 +1,45 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /identify
+  forward-headers-strategy: framework
+spring:
+  data:
+    redis:
+      host: redis
+      port: 6379
+  application:
+    name: identify-service
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: ${URL_DB}
+    username: ${USERNAME_DB}
+    password: ${PASSWORD_DB}
+  jpa:
+    hibernate:
+      ddl-auto: update
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${CLIENT_ID}
+            client-secret: ${CLIENT_SECRET}
+            redirect-uri: http://localhost:8000/api/v1/identify/login/oauth2/code/google
+            scope:
+              - email
+              - profile
+        provider:
+          google:
+            user-name-attribute: sub
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+jwt:
+  signerKey: ${SIGNER_KEY}
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: TRACE
+    org.springframework.web.client: DEBUG

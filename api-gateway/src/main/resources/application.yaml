@@ -1,0 +1,56 @@
+server:
+  port: 8000
+app:
+  api-prefix: /api/v1
+
+#logging:
+#  level:
+#    # Bật log DEBUG cho toàn bộ Spring Cloud Gateway
+#    org.springframework.cloud.gateway: DEBUG
+#    # Bật log DEBUG cho các predicate và filter
+#    org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator: DEBUG
+#    # Bật log DEBUG cho các yêu cầu HTTP đi ra từ Gateway
+#    reactor.netty.http.client: DEBUG
+
+spring:
+  data:
+    redis:
+      host: redis
+      port: 6379
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      forwarded:
+        enabled: true
+      routes:
+        - id: identify-service
+          uri: http://identify-service:8080
+          predicates:
+            - Path=/api/v1/identify/**
+          filters:
+            - StripPrefix=2
+        - id: oauth2-initiate
+          uri: http://identify-service:8080
+          predicates:
+            - Path=/api/v1/identify/login/oauth2/**
+          filters:
+            - StripPrefix=2
+        - id: oauth2-success
+          uri: http://identify-service:8080
+          predicates:
+            - Path=/api/v1/identify/auth/oauth2/**
+          filters:
+            - StripPrefix=2
+        - id: oauth2-authorization
+          uri: http://identify-service:8080
+          predicates:
+            - Path=/api/v1/oauth2/**
+          filters:
+            - StripPrefix=2
+      default-filters:
+        - SaveSession
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty.http.client: DEBUG
