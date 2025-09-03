@@ -1,6 +1,8 @@
 package com.example.identifyService.entity;
 
+import com.example.identifyService.validator.PasswordConstraint;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -20,11 +22,11 @@ public class User {
     @Column(name = "user_id", nullable = false, length = 50)
     private String userId;
 
-    @Column(name = "username", nullable = false, length = 255)
+    @Column(name = "username", nullable = false)
     private String username;
 
     @Column(name = "password", nullable = false)
-    @Size(min = 8, message = "PASSWORD_MINIMUM")
+    @PasswordConstraint(message = "INVALID_PASSWORD", min = 8)
     private String password;
 
     @Column(name = "full_name", length = 100)
@@ -41,6 +43,7 @@ public class User {
 
     @Size(max = 255)
     @NotNull
+    @Email(message = "INVALID_EMAIL")
     @Column(name = "email", nullable = false)
     private String email;
 
@@ -54,13 +57,18 @@ public class User {
 
     @Size(max = 10)
     @Column(name = "locale", length = 10)
+    @ColumnDefault("'US'")
     private String locale;
+
+    @Column(name = "is_active")
+    private Boolean isActive;
 
     @PrePersist
     public void prePersist() {
         Instant now = Instant.now();
         this.createdAt = now;
         this.updatedAt = now;
+        this.isActive = false;
     }
 
     @PreUpdate

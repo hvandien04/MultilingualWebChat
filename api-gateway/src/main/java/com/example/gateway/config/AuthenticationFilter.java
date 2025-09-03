@@ -35,7 +35,9 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     private final String[] publicEndpoints = {
             "identify/auth",
             "identify/users",
+            "identify/auth/active",
             "/identify/auth/.*",
+            "/identify/auth/active",
             "/identify/users/.*",
             "identify/oauth2/.*",
             "identify/login/oauth2/.*",

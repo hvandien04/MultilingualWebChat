@@ -2,8 +2,14 @@ server:
   port: 8080
   servlet:
     context-path: /identify
+    session:
+      cookie:
+        path: /
+#  forward-headers-strategy: native
   forward-headers-strategy: framework
 spring:
+  sendgrid:
+    api-key: ${SENDGRID_API_KEY}
   data:
     redis:
       host: redis
@@ -15,6 +21,8 @@ spring:
     url: ${URL_DB}
     username: ${USERNAME_DB}
     password: ${PASSWORD_DB}
+  activation:
+    base-url: "http://localhost:8000/api/v1/identify/auth/active"
   jpa:
     hibernate:
       ddl-auto: update
@@ -26,6 +34,8 @@ spring:
             client-id: ${CLIENT_ID}
             client-secret: ${CLIENT_SECRET}
             redirect-uri: http://localhost:8000/api/v1/identify/login/oauth2/code/google
+#            redirect-uri: http://hoangvandien.id.vn:8000/api/v1/identify/login/oauth2/code/google
+#            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             scope:
               - email
               - profile

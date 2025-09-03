@@ -13,7 +13,9 @@ public enum ErrorCode {
     UNAUTHENTICATED(1003, "Unauthenticated" , HttpStatus.UNAUTHORIZED ),
     PASSWORD_MINIMUM(1004, "Password minimum 8 characters" , HttpStatus.BAD_REQUEST ),
     INVALID_PASSWORD(1005,"Invalid password" ,HttpStatus.BAD_REQUEST ),
-    ;
+    NOT_ACTIVATE_YET(1006,"User not activate yet" ,HttpStatus.BAD_REQUEST ),
+    EXPIRED_TOKEN(1007,"Expired token" ,HttpStatus.BAD_REQUEST ),
+    ALREADY_ACTIVATE(1008,"User already activate" ,HttpStatus.BAD_REQUEST ),;
 
     private final Integer code;
     private final String message;

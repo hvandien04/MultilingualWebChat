@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Test WebSocket Chat</title>
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+</head>
+<body>
+  <h2>WebSocket Chat Test</h2>
+
+  <div>
+    <label><b>JWT Token:</b></label><br>
+    <textarea id="token" rows="3" cols="80" placeholder="Nhập token của bạn..."></textarea><br><br>
+
+    <label><b>Conversation ID:</b></label><br>
+    <input type="text" id="conversationId" placeholder="C_123"><br><br>
+
+    <label><b>Nội dung tin nhắn:</b></label><br>
+    <input type="text" id="messageText" placeholder="Nhập tin nhắn..."><br><br>
+
+    <button onclick="connect()">🔌 Kết nối</button>
+    <button onclick="sendMessage()">📤 Gửi tin nhắn</button>
+  </div>
+
+  <hr>
+
+  <h3>📥 Tin nhắn nhận được:</h3>
+  <ul id="messages"></ul>
+
+  <script>
+    let stompClient = null;
+
+    function connect() {
+      const token = document.getElementById("token").value;
+      const socket = new SockJS("http://localhost:8081/chat/ws");
+      stompClient = Stomp.over(socket);
+
+      stompClient.connect(
+        { Authorization: "Bearer " + token },
+        function (frame) {
+          console.log("Đã kết nối:", frame);
+
+          const conversationId = document.getElementById("conversationId").value;
+          stompClient.subscribe("/topic/" + conversationId, function (message) {
+            const body = JSON.parse(message.body);
+            showMessage(`[${body.sentDatetime}] 🌐 ${body.messageText} → ${body.messageTextTranslate}`);
+          });
+        },
+        function (error) {
+          console.error("Lỗi kết nối:", error);
+          alert("Không kết nối được: " + error);
+        }
+      );
+    }
+
+    function sendMessage() {
+      if (!stompClient || !stompClient.connected) {
+        alert("Chưa kết nối WebSocket!");
+        return;
+      }
+
+      const conversationId = document.getElementById("conversationId").value;
+      const messageText = document.getElementById("messageText").value;
+
+      stompClient.send("/app/chat", {}, JSON.stringify({
+        messageText: messageText,
+        conversationId: conversationId,
+        type: "TEXT" 
+      }));
+    }
+
+    function showMessage(message) {
+      const ul = document.getElementById("messages");
+      const li = document.createElement("li");
+      li.textContent = message;
+      ul.appendChild(li);
+    }
+    function printInbound(packet) {
+    const ul = document.getElementById("messages");
+    const li = document.createElement("li");
+
+    const head = document.createElement("div");
+    head.style.marginBottom = "4px";
+    head.innerHTML = `<b>📩 From:</b> ${escapeHtml(packet.destination || "")}`;
+    li.appendChild(head);
+
+    const hdr = document.createElement("pre");
+    hdr.textContent = "Headers:\n" + JSON.stringify(packet.headers, null, 2);
+    hdr.style.whiteSpace = "pre-wrap";
+    hdr.style.margin = "6px 0";
+    li.appendChild(hdr);
+
+    const body = document.createElement("pre");
+    if (packet.jsonBody != null) {
+      body.textContent = "Body (JSON):\n" + JSON.stringify(packet.jsonBody, null, 2);
+    } else {
+      body.textContent = "Body (raw):\n" + packet.rawBody;
+    }
+    body.style.whiteSpace = "pre-wrap";
+    li.appendChild(body);
+
+    ul.appendChild(li);
+  }
+
+  function escapeHtml(s) {
+    return (s ?? "").replace(/[&<>"']/g, m => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[m]));
+  }
+  </script>
+</body>
+</html>

@@ -11,6 +11,7 @@ import com.example.identifyService.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -19,7 +20,7 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     @PostMapping
-    ApiResponse<UserResponse> createUser(@RequestBody UserCreateRequest userCreateRequest) {
+    ApiResponse<UserResponse> createUser(@RequestBody UserCreateRequest userCreateRequest) throws Exception {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.CreateUser(userCreateRequest))
                 .build();
@@ -46,6 +47,13 @@ public class UserController {
                 .build();
     }
 
+    @PutMapping("/avatar")
+    ApiResponse<String> updateAvatar(@RequestBody String url) {
+        return ApiResponse.<String>builder()
+                .message(userService.UpdateAvatar(url))
+                .build();
+    }
+
     @PostMapping("/batch")
     ApiResponse<List<UserProfileResponse>>getUserProfile(@RequestBody UserIdsRequest request){
         return ApiResponse.<List<UserProfileResponse>>builder()
@@ -57,6 +65,13 @@ public class UserController {
     ApiResponse<String> updatePassword(@RequestBody UserUpdatePasswordRequest request){
         return ApiResponse.<String>builder()
                 .message(userService.UpdatePassword(request))
+                .build();
+    }
+
+    @PostMapping("/find-user")
+    ApiResponse<List<UserProfileResponse>> findUser(@RequestParam String request){
+        return ApiResponse.<List<UserProfileResponse>>builder()
+                .result(userService.GetUserInfo(request))
                 .build();
     }
 

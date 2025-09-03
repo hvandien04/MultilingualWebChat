@@ -35,5 +35,16 @@ services:
     container_name: backend-chat-app-identify-service
     ports:
       - "8080:8080"
+    env_file:
+      - identify-service/.env
+  chat-service:
+    image: backend-chat-app/chat-service
+    build:
+      context: ./chat-service
+    container_name: backend-chat-app-chat-service
+    ports:
+      - "8081:8081"
+    env_file:
+      - chat-service/.env
 volumes:
   db-data:

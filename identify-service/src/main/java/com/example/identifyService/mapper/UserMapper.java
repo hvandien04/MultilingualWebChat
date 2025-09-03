@@ -6,6 +6,7 @@ import com.example.identifyService.dto.response.UserProfileResponse;
 import com.example.identifyService.dto.response.UserResponse;
 import com.example.identifyService.entity.User;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")

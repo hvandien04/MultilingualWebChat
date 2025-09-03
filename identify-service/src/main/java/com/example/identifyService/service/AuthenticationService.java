@@ -45,6 +45,9 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticate(AuthenticationRequest request){
         User user = userRepository.findByUsername(request.getUsername()).orElseThrow(()-> new AppException(ErrorCode.USER_NOT_FOUND));
+        if(user.getIsActive() == false){
+            throw new AppException(ErrorCode.NOT_ACTIVATE_YET);
+        }
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         if(!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new AppException(ErrorCode.WRONG_PASSWORD);
@@ -81,7 +84,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    private SignedJWT verifyToken(String token, boolean isRefresh) throws ParseException, JOSEException {
+    public SignedJWT verifyToken(String token, boolean isRefresh) throws ParseException, JOSEException {
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
         SignedJWT signedJWT = SignedJWT.parse(token);
 
@@ -98,7 +101,7 @@ public class AuthenticationService {
         return signedJWT;
     }
 
-    private String generateToken(User user) {
+    public String generateToken(User user) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                 .subject(user.getUsername())
@@ -119,6 +122,8 @@ public class AuthenticationService {
         }
         return jwsObject.serialize();
     }
+
+
 
     private String buildScope(User user){
         StringJoiner scope = new StringJoiner(" ");
@@ -141,6 +146,7 @@ public class AuthenticationService {
                     .fullName(fullName)
                     .avatarUrl(avatar)
                     .googleId(sub)
+                    .isActive(true)
                     .build();
             return userRepository.save(newUser);
         });

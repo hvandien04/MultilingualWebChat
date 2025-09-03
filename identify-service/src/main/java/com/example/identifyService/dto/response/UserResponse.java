@@ -1,12 +1,10 @@
 package com.example.identifyService.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
 
@@ -19,6 +17,7 @@ public class UserResponse {
     private String userId;
     private String googleId;
     private String username;
+    private String email;
     private String locale;
     private String avatarUrl;
     private String fullName;

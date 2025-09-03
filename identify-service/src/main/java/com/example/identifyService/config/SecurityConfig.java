@@ -15,10 +15,13 @@ import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.crypto.spec.SecretKeySpec;
 
-import static org.springframework.security.config.Customizer.withDefaults;
+import java.util.List;
 
 @Configuration
 @EnableMethodSecurity
@@ -33,6 +36,7 @@ public class SecurityConfig {
 
     private final String[] PUBLIC_URLS = {
             "/auth",
+            "/auth/active",
             "/auth/login",
             "/auth/register",
             "/auth/introspect",
@@ -43,6 +47,7 @@ public class SecurityConfig {
             "/v3/api-docs/**",
             "/swagger-ui.html",
             "/swagger-ui/**"
+
     };
 
     @Bean
@@ -53,7 +58,7 @@ public class SecurityConfig {
         http.oauth2ResourceServer(oauth2 ->
                 oauth2.jwt(jwt -> jwt.decoder(customJwtDecoder))
         );
-        http.cors(withDefaults());
+        http.cors(configurer -> configurer.configurationSource(corsConfigurationSource()));
         http.csrf(AbstractHttpConfigurer::disable);
         http.oauth2Login(oauth2 -> {
             oauth2.defaultSuccessUrl("/identify/auth/oauth2/success", true);
@@ -68,6 +73,20 @@ public class SecurityConfig {
         SecretKeySpec secretKeySpec = new SecretKeySpec(SIGNER_KEY.getBytes(), "HS512");
         return NimbusJwtDecoder.withSecretKey(secretKeySpec).macAlgorithm(MacAlgorithm.HS512).build();
     }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedMethods(List.of("*"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
 
     @Bean
     PasswordEncoder passwordEncoder() {

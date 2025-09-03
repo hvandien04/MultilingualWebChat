@@ -11,5 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserProfileResponse {
     private String userId;
+    private String email;
     private String fullName;
+    private String avatarUrl;
+    private String locale;
 }
