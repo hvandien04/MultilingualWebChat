@@ -1,4 +1,8 @@
 server:
+  reactive:
+    session:
+      cookie:
+        name: GATEWAYSESSION
   port: 8000
 app:
   api-prefix: /api/v1
@@ -24,8 +28,8 @@ spring:
       forwarded:
         enabled: true
       x-forwarded:
-        enabled: true           # BẬT X-Forwarded-*
-        prefix-enabled: true    # QUAN TRỌNG: gửi X-Forwarded-Prefix=/api/v1
+        enabled: true
+        prefix-enabled: true
         host-enabled: true
         port-enabled: true
         proto-enabled: true
@@ -46,6 +50,12 @@ spring:
           uri: http://identify-service:8080
           predicates:
             - Path=${app.api-prefix}/identify/auth/oauth2/**
+          filters:
+            - StripPrefix=2
+        - id: oauth2-authorization
+          uri: http://identify-service:8080
+          predicates:
+            - Path=${app.api-prefix}/identify/oauth2/**
           filters:
             - StripPrefix=2
         - id: oauth2-authorization

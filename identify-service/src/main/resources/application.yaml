@@ -5,7 +5,6 @@ server:
     session:
       cookie:
         path: /
-#  forward-headers-strategy: native
   forward-headers-strategy: framework
 spring:
   sendgrid:
@@ -33,7 +32,7 @@ spring:
           google:
             client-id: ${CLIENT_ID}
             client-secret: ${CLIENT_SECRET}
-            redirect-uri: http://localhost:8000/api/v1/identify/login/oauth2/code/google
+            redirect-uri: http://localhost:8000/api/v1/identify/login/oauth2/code/{registrationId}
 #            redirect-uri: http://hoangvandien.id.vn:8000/api/v1/identify/login/oauth2/code/google
 #            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             scope:
@@ -47,9 +46,9 @@ spring:
             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
 jwt:
   signerKey: ${SIGNER_KEY}
-
-logging:
-  level:
-    org.springframework.security: DEBUG
-    org.springframework.security.oauth2: TRACE
-    org.springframework.web.client: DEBUG
+#
+#logging:
+#  level:
+#    org.springframework.security: DEBUG
+#    org.springframework.security.oauth2: TRACE
+#    org.springframework.web.client: DEBUG

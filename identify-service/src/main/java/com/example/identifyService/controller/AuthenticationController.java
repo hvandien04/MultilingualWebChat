@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
@@ -71,10 +72,10 @@ public class AuthenticationController {
                 .secure(false)
                 .httpOnly(false)
                 .path("/")
-                .domain("localhost")
+                .sameSite("Lax")
                 .maxAge(30 * 24 * 60 * 60)
                 .build();
-        response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
         response.sendRedirect("http://localhost:5173/chat");
 
